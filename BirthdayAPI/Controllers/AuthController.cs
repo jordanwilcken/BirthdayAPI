@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Security;
 
@@ -19,6 +20,7 @@ namespace BirthdayAPI.Controllers
 			else
 			{
 				FormsAuthentication.SetAuthCookie(id.prop1, false);
+				HttpContext.Current.Session["UserName"] = id.prop1;
 				return true;
 			}
 		}
