@@ -24,7 +24,7 @@ namespace BirthdayAPI.Controllers
 			return TheModel.GetBirthData(HttpContext.Current.User.Identity.Name, searchObject);
 		}
 
-		// POST api/<controller>
+		[HttpPost]
 		public IEnumerable<BirthData> GetForPeople(Name[] names)
 		{
 			var searchObject = new Dictionary<string, object> { { "names", names } };
