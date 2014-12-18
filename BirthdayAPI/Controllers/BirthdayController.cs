@@ -15,49 +15,36 @@ namespace BirthdayAPI.Controllers
 		// GET api/<controller>
 		public IEnumerable<BirthData> Get()
 		{
-			return TheModel.GetBirthData(User);
+			return TheModel.GetBirthData(HttpContext.Current.User.Identity.Name);
 		}
 
 		public IEnumerable<BirthData> GetThisMonth()
 		{
 			var searchObject = new Dictionary<string, object> { { "month", DateTime.Now.Month } };
-			return TheModel.GetBirthData(User, searchObject);
+			return TheModel.GetBirthData(HttpContext.Current.User.Identity.Name, searchObject);
 		}
 
 		// POST api/<controller>
 		public IEnumerable<BirthData> GetForPeople(Name[] names)
 		{
 			var searchObject = new Dictionary<string, object> { { "names", names } };
-			return TheModel.GetBirthData(User, searchObject);
+			return TheModel.GetBirthData(HttpContext.Current.User.Identity.Name, searchObject);
 		}
 
 		public bool Add(BirthData birthData)
 		{
-			return TheModel.Add(User, birthData);
+			return TheModel.Add(HttpContext.Current.User.Identity.Name, birthData);
 		}
 
 		public bool Update(BirthData birthData)
 		{
-			return TheModel.Update(User, birthData);
+			return TheModel.Update(HttpContext.Current.User.Identity.Name, birthData);
 		}
 
 		public void Delete(Name name)
 		{
 			var searchObject = new Dictionary<string, object> { { "names", new Name[] { name } } };
-			TheModel.Delete(User, searchObject);
-		}
-
-		private string User
-		{
-			get
-			{
-				string user = HttpContext.Current.Session["UserName"] as string;
-				if (user == null)
-				{
-					throw new Exception("You forgot to set the UserName on this session.");
-				}
-				return user;
-			}
+			TheModel.Delete(HttpContext.Current.User.Identity.Name, searchObject);
 		}
 	}
 

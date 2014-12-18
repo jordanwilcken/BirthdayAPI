@@ -20,7 +20,6 @@ namespace BirthdayAPI.Controllers
 			else
 			{
 				FormsAuthentication.SetAuthCookie(id.prop1, false);
-				HttpContext.Current.Session["UserName"] = id.prop1;
 				return true;
 			}
 		}
