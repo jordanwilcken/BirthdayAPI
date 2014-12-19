@@ -103,6 +103,8 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\BirthdayController.cs" />
     <Compile Include="Controllers\GreetingController.cs" />
+    <Compile Include="DatabaseInterface.cs" />
+    <Compile Include="FakeDataInterface.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

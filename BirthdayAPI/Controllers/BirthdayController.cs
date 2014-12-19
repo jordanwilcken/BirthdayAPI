@@ -31,7 +31,7 @@ namespace BirthdayAPI.Controllers
 			return TheModel.GetBirthData(HttpContext.Current.User.Identity.Name, searchObject);
 		}
 
-		public bool Add(BirthData birthData)
+		public object Add(BirthData birthData)
 		{
 			return TheModel.Add(HttpContext.Current.User.Identity.Name, birthData);
 		}
