@@ -11,15 +11,15 @@ namespace BirthdayAPI.Controllers
 {
 	public class AuthController : ApiController
 	{
-		public bool Login(Thing id)
+		public bool Login(Credentials credentials)
 		{
-			if (!Membership.ValidateUser(id.prop1, id.prop2))
+            if (!Membership.ValidateUser(credentials.username, credentials.password))
 			{
 				return false;
 			}
 			else
 			{
-				FormsAuthentication.SetAuthCookie(id.prop1, false);
+                FormsAuthentication.SetAuthCookie(credentials.username, false);
 				return true;
 			}
 		}
@@ -59,9 +59,9 @@ namespace BirthdayAPI.Controllers
 		}
 	}
 
-	public class Thing
+	public class Credentials
 	{
-		public string prop1 { get; set; }
-		public string prop2 { get; set; }
+		public string username { get; set; }
+		public string password { get; set; }
 	}
 }
