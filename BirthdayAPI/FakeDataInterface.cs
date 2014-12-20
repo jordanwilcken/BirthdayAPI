@@ -21,5 +21,10 @@ namespace BirthdayAPI
 		{
 			throw new NotImplementedException();
 		}
+
+		internal static object UpdateBirthData(string user, Models.BirthData birthData)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

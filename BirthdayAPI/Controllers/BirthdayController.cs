@@ -36,7 +36,7 @@ namespace BirthdayAPI.Controllers
 			return TheModel.Add(HttpContext.Current.User.Identity.Name, birthData);
 		}
 
-		public bool Update(BirthData birthData)
+		public object Update(BirthData birthData)
 		{
 			return TheModel.Update(HttpContext.Current.User.Identity.Name, birthData);
 		}

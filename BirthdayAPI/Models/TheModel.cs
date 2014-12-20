@@ -38,66 +38,63 @@ namespace BirthdayAPI.Models
 			return DatabaseInterface.GetBirthData(user, searchObject);
 		}
 
-		public static object Add(string user, BirthData birthData)
-		{
-			Match match = Regex.Match(birthData.BirthdayFormat, "mm-dd", RegexOptions.IgnoreCase);
-			if (match.Success)
-			{
-				if (birthData.Birthday.Length > 5)
-				{
-					birthData.Birthday = birthData.Birthday.Substring(match.Index, 5);
-					if (!BirthdayMatchesFormat(birthData.Birthday, "mm-dd"))
-					{
-						if (!BirthData.TryFormatBirthday(birthData.Birthday, "mm-dd"))
-						{
-							//not going to continue because I dunno what you give me for a birthday.
-						}
-					}
-					//birthData.BirthdayFormat = "MM-DD";
-				}
-			}
-			else 
-			{
-				DateTime dt;
-				if (!DateTime.TryParse(birthData.Birthday, out dt))
-				{
-					return new { Message = "Sorry, I couldn't validate the birthday you passed in. Try entering the birthday in the format 'MM-DD'" };
-				}
-				birthData.Birthday = string.Format("{0}-{1}", dt.Month.ToString("00"), dt.Day.ToString("00"));
-				birthData.BirthdayFormat = "MM-DD";
-			}
+        public static string TheBirthdayFormat
+        {
+            get { return ConfigurationManager.AppSettings.Get("TheBirthdayFormat"); }
+            set { ConfigurationManager.AppSettings.Set("TheBirthdayFormat", value); }
+        }
 
-			if (UseFakeData)
-			{
-				return FakeDataInterface.AddBirthData(user, birthData);
-			}
+	   public static object Add(string user, BirthData birthData)
+	   {
+		   string theBirthdayFormat = TheBirthdayFormat;
+		   Match match = Regex.Match(birthData.BirthdayFormat, theBirthdayFormat, RegexOptions.IgnoreCase);
+		   if (!match.Success && !birthData.TryFormatBirthday(theBirthdayFormat))
+		   {
+			   return new { Message = "Sorry, I can't understand the birthday you supplied." };
+		   }
+		   
+		   if (UseFakeData)
+		   {
+			   return FakeDataInterface.AddBirthData(user, birthData);
+		   }
 
-			string returnMessage = DatabaseInterface.AddBirthData(user, birthData);
-			if (Regex.IsMatch(returnMessage, "success", RegexOptions.IgnoreCase))
-			{
-				return new { Message = returnMessage };
-			}
-			else
-			{
-				return new { Message = "There was a problem adding that birthday. Here's what we know:\n\n" + returnMessage };
-			}
-		}
-
-		private static bool BirthdayMatchesFormat(string birthday, string format)
-		{
-			if (!Regex.IsMatch(format, "mm-dd", RegexOptions.IgnoreCase))
-			{
-				throw new NotImplementedException();
-			}
+		   string returnMessage = DatabaseInterface.AddBirthData(user, birthData);
+		   if (Regex.IsMatch(returnMessage, "success", RegexOptions.IgnoreCase))
+		   {
+			   return new { Message = returnMessage };
+		   }
+		   else
+		   {
+			   return new { Message = "There was a problem adding that birthday. Here's what we know:\n\n" + returnMessage };
+		   }
+	   }
 
 
-			return false;
-		}
 
-		internal static bool Update(string User, BirthData birthData)
-		{
-			throw new NotImplementedException();
-		}
+	   internal static object Update(string user, BirthData birthData)
+	   {
+		   string theBirthdayFormat = TheBirthdayFormat;
+		   Match match = Regex.Match(birthData.BirthdayFormat, theBirthdayFormat, RegexOptions.IgnoreCase);
+		   if (!match.Success && !birthData.TryFormatBirthday(theBirthdayFormat))
+		   {
+			   return new { Message = "Sorry, I can't understand the birthday you supplied." };
+		   }
+
+		   if (UseFakeData)
+		   {
+			   return FakeDataInterface.UpdateBirthData(user, birthData);
+		   }
+
+		   string returnMessage = DatabaseInterface.UpdateBirthData(user, birthData);
+		   if (Regex.IsMatch(returnMessage, "success", RegexOptions.IgnoreCase))
+		   {
+			   return new { Message = returnMessage };
+		   }
+		   else
+		   {
+			   return new { Message = "There was a problem adding that birthday. Here's what we know:\n\n" + returnMessage };
+		   }
+	   }
 
 		internal static void Delete(string User, Dictionary<string, object> searchObject)
 		{
@@ -121,16 +118,37 @@ namespace BirthdayAPI.Models
 
 			Name = new Name { FirstName = firstName, LastInitial = lastInitial };
 			Birthday = birthday;
-			BirthdayFormat = birthdayFormat;
+			if (!TryFormatBirthday(birthdayFormat))
+			{
+				BirthdayFormat = "unknown";
+			}
 		}
 
-		public Name Name {get;set;}
-		public string Birthday {get; set;}
-		public string BirthdayFormat { get; set; }
-
-		internal static bool TryFormatBirthday(string p1, string p2)
+		public Name Name { get; set; }
+		public string Birthday { get; set; }
+		public string BirthdayFormat { get; private set; }
+		public bool TryFormatBirthday(string format)
 		{
-			throw new NotImplementedException();
+			if (!Regex.IsMatch(format, "mm-dd", RegexOptions.IgnoreCase))
+			{
+				throw new NotImplementedException();
+			}
+
+			if (Regex.IsMatch(Birthday, @"\d{2}-\d{2}"))
+			{
+				return true;
+			}
+
+			DateTime dt;
+			if (!DateTime.TryParse(Birthday, out dt))
+			{
+				return false;
+			}
+
+			Birthday = string.Format("{0}-{1}", dt.Month.ToString("00"), dt.Day.ToString("00"));
+			BirthdayFormat = "MM-DD";
+			return true;
 		}
+
 	}
 }

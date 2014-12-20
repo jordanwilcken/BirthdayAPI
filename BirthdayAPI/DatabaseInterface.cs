@@ -29,7 +29,7 @@ namespace BirthdayAPI
 			}
 			catch (Exception e)
 			{
-				birthdata.Add(new BirthData("There was an error retrieving birthdays on the server", 'X', "Error", "Sorry"));
+				birthdata.Add(new BirthData("There was an error. Here's what we know:\r\n\r\n" + e.Message, 'X', "Sorry"));
 			}
 			finally
 			{
@@ -65,7 +65,7 @@ namespace BirthdayAPI
 			}
 			catch (Exception e)
 			{
-				birthdata.Add(new BirthData("There was an error retrieving birthdays on the server", 'X', "Error", "Sorry"));
+				birthdata.Add(new BirthData("There was an error. Here's what we know:\r\n\r\n" + e.Message, 'X', "Error", "Sorry"));
 			}
 			finally
 			{
@@ -214,6 +214,11 @@ namespace BirthdayAPI
 				parameters[parameterName] = name.LastInitial.ToString();
 			}
 			return condition;
+		}
+
+		internal static string UpdateBirthData(string user, BirthData birthData)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
