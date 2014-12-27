@@ -73,8 +73,18 @@ namespace BirthdayAPI.Models
 
 	   internal static object Update(string user, BirthData birthData)
 	   {
+		   if (birthData == null)
+		   {
+			   return new { Message = "I'm sorry, the server could not find the birth data in the object you passed in." };
+		   }
+
 		   string theBirthdayFormat = TheBirthdayFormat;
-		   Match match = Regex.Match(birthData.BirthdayFormat, theBirthdayFormat, RegexOptions.IgnoreCase);
+		   string formatIn = birthData.BirthdayFormat;
+		   if (formatIn == null)
+		   {
+			   formatIn = string.Empty;
+		   }
+		   Match match = Regex.Match(formatIn, theBirthdayFormat, RegexOptions.IgnoreCase);
 		   if (!match.Success && !birthData.TryFormatBirthday(theBirthdayFormat))
 		   {
 			   return new { Message = "Sorry, I can't understand the birthday you supplied." };
@@ -136,6 +146,7 @@ namespace BirthdayAPI.Models
 
 			if (Regex.IsMatch(Birthday, @"\d{2}-\d{2}"))
 			{
+				BirthdayFormat = "MM-DD";
 				return true;
 			}
 

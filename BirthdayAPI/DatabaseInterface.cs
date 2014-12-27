@@ -19,8 +19,9 @@ namespace BirthdayAPI
 			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
 			SQLiteConnection connection = new SQLiteConnection(connectionString);
 			DataTable table = new DataTable();
-			string selectText = string.Format(@"SELECT * FROM birthdata WHERE owner = '{0}'", user);
+			string selectText = "SELECT * FROM birthdata WHERE owner = @owner";
 			SQLiteCommand command = new SQLiteCommand(selectText, connection);
+			command.Parameters.AddWithValue("@owner", user);
 			SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
 			try
 			{
@@ -161,6 +162,13 @@ namespace BirthdayAPI
 				conditions.Add(string.Format("instr(birthday, {0}) = 1", month.ToString("00")));
 			}
 
+			if (searchObject.ContainsKey("owner"))
+			{
+				string owner = (string)searchObject["owner"];
+				conditions.Add(string.Format("owner = @owner"));
+				conditionParameters.Add("@owner", owner);
+			}
+
 			if (conditions.Count != 0)
 			{
 				command.CommandText += " WHERE " + string.Join(" AND ", conditions);
@@ -218,7 +226,40 @@ namespace BirthdayAPI
 
 		internal static string UpdateBirthData(string user, BirthData birthData)
 		{
-			throw new NotImplementedException();
+			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
+			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			DataTable table = new DataTable();
+			string updateText = @"UPDATE birthdata SET birthday=@birthday";
+			SQLiteCommand command = new SQLiteCommand(updateText, connection);
+			command.Parameters.AddWithValue("@birthday", birthData.Birthday);
+			command = AddWhereConditions(
+				command,
+				new Dictionary<string, object>
+				{
+					{ "owner", user},
+					{ "names", new Name[] { birthData.Name } }
+				}
+			);
+
+			string returnMessage = "I dunno what happened.";
+			try
+			{
+				connection.Open();
+				if (command.ExecuteNonQuery() > 0)
+				{
+					returnMessage = "Success!";
+				}
+			}
+			catch (Exception e)
+			{
+				returnMessage = string.Format("There was an error. This was the message:\r\n\r\n{0}", e.Message);
+			}
+			finally
+			{
+				connection.Close();
+			}
+
+			return returnMessage;
 		}
 	}
 }
