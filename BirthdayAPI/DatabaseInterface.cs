@@ -56,6 +56,10 @@ namespace BirthdayAPI
 			DataTable table = new DataTable();
 			string selectText = @"SELECT * FROM birthdata";
 			SQLiteCommand command = new SQLiteCommand(selectText, connection);
+			if (!searchObject.ContainsKey("owner"))
+			{
+				searchObject.Add("owner", user);
+			}
 			command = AddWhereConditions(command, searchObject);
 
 			SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
@@ -88,7 +92,6 @@ namespace BirthdayAPI
 		{
 			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
 			SQLiteConnection connection = new SQLiteConnection(connectionString);
-			DataTable table = new DataTable();
 			string insertText = string.Empty
 				+ @"INSERT INTO birthdata (owner, first_name, last_initial, birthday) VALUES "
 				+ "(@owner, @first_name, @last_initial, @birth_day)";
@@ -117,6 +120,68 @@ namespace BirthdayAPI
 			}
 
 			return returnMessage;
+		}
+
+		
+
+		public static string UpdateBirthData(string user, BirthData birthData)
+		{
+			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
+			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			string updateText = @"UPDATE birthdata SET birthday=@birthday";
+			SQLiteCommand command = new SQLiteCommand(updateText, connection);
+			command.Parameters.AddWithValue("@birthday", birthData.Birthday);
+			command = AddWhereConditions(
+				command,
+				new Dictionary<string, object>
+				{
+					{ "owner", user},
+					{ "names", new Name[] { birthData.Name } }
+				}
+			);
+
+			string returnMessage = "I dunno what happened.";
+			try
+			{
+				connection.Open();
+				if (command.ExecuteNonQuery() > 0)
+				{
+					returnMessage = "Success!";
+				}
+			}
+			catch (Exception e)
+			{
+				returnMessage = string.Format("There was an error. This was the message:\r\n\r\n{0}", e.Message);
+			}
+			finally
+			{
+				connection.Close();
+			}
+
+			return returnMessage;
+		}
+
+		public static void DeleteBirthData(string user, Dictionary<string, object> searchObject)
+		{
+			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
+			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			string deleteText = @"DELETE FROM birthdata";
+			SQLiteCommand command = new SQLiteCommand(deleteText, connection);
+			if (!searchObject.ContainsKey("owner"))
+			{
+				searchObject.Add("owner", user);
+			}
+			command = AddWhereConditions(command, searchObject);
+
+			try
+			{
+				connection.Open();
+				command.ExecuteNonQuery();
+			}
+			finally
+			{
+				connection.Close();
+			}
 		}
 
 		private static SQLiteCommand AddWhereConditions(SQLiteCommand command, Dictionary<string, object> searchObject)
@@ -222,44 +287,6 @@ namespace BirthdayAPI
 				parameters[parameterName] = name.LastInitial.ToString();
 			}
 			return condition;
-		}
-
-		internal static string UpdateBirthData(string user, BirthData birthData)
-		{
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
-			DataTable table = new DataTable();
-			string updateText = @"UPDATE birthdata SET birthday=@birthday";
-			SQLiteCommand command = new SQLiteCommand(updateText, connection);
-			command.Parameters.AddWithValue("@birthday", birthData.Birthday);
-			command = AddWhereConditions(
-				command,
-				new Dictionary<string, object>
-				{
-					{ "owner", user},
-					{ "names", new Name[] { birthData.Name } }
-				}
-			);
-
-			string returnMessage = "I dunno what happened.";
-			try
-			{
-				connection.Open();
-				if (command.ExecuteNonQuery() > 0)
-				{
-					returnMessage = "Success!";
-				}
-			}
-			catch (Exception e)
-			{
-				returnMessage = string.Format("There was an error. This was the message:\r\n\r\n{0}", e.Message);
-			}
-			finally
-			{
-				connection.Close();
-			}
-
-			return returnMessage;
 		}
 	}
 }

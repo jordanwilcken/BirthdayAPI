@@ -41,6 +41,7 @@ namespace BirthdayAPI.Controllers
 			return TheModel.Update(HttpContext.Current.User.Identity.Name, birthData);
 		}
 
+		[HttpPost]
 		public void Delete(Name name)
 		{
 			var searchObject = new Dictionary<string, object> { { "names", new Name[] { name } } };

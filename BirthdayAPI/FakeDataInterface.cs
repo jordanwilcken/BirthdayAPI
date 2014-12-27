@@ -26,5 +26,10 @@ namespace BirthdayAPI
 		{
 			throw new NotImplementedException();
 		}
+
+		internal static object DeleteBirthData(string user, Dictionary<string, object> searchObject)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -106,9 +106,14 @@ namespace BirthdayAPI.Models
 		   }
 	   }
 
-		internal static void Delete(string User, Dictionary<string, object> searchObject)
+	   internal static void Delete(string user, Dictionary<string, object> searchObject)
 		{
-			throw new NotImplementedException();
+			if (UseFakeData)
+			{
+				FakeDataInterface.DeleteBirthData(user, searchObject);
+			}
+
+			DatabaseInterface.DeleteBirthData(user, searchObject);
 		}
 	}
 
