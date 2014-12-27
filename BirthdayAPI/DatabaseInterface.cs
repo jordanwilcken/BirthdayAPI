@@ -16,8 +16,7 @@ namespace BirthdayAPI
 		{
 			List<BirthData> birthdata = new List<BirthData>();
 
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			SQLiteConnection connection = new SQLiteConnection(ConnectionString);
 			DataTable table = new DataTable();
 			string selectText = "SELECT * FROM birthdata WHERE owner = @owner";
 			SQLiteCommand command = new SQLiteCommand(selectText, connection);
@@ -51,8 +50,7 @@ namespace BirthdayAPI
 		{
 			List<BirthData> birthdata = new List<BirthData>();
 
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			SQLiteConnection connection = new SQLiteConnection(ConnectionString);
 			DataTable table = new DataTable();
 			string selectText = @"SELECT * FROM birthdata";
 			SQLiteCommand command = new SQLiteCommand(selectText, connection);
@@ -90,8 +88,7 @@ namespace BirthdayAPI
 
 		public static string AddBirthData(string user, BirthData birthData)
 		{
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			SQLiteConnection connection = new SQLiteConnection(ConnectionString);
 			string insertText = string.Empty
 				+ @"INSERT INTO birthdata (owner, first_name, last_initial, birthday) VALUES "
 				+ "(@owner, @first_name, @last_initial, @birth_day)";
@@ -126,8 +123,7 @@ namespace BirthdayAPI
 
 		public static string UpdateBirthData(string user, BirthData birthData)
 		{
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			SQLiteConnection connection = new SQLiteConnection(ConnectionString);
 			string updateText = @"UPDATE birthdata SET birthday=@birthday";
 			SQLiteCommand command = new SQLiteCommand(updateText, connection);
 			command.Parameters.AddWithValue("@birthday", birthData.Birthday);
@@ -163,8 +159,7 @@ namespace BirthdayAPI
 
 		public static void DeleteBirthData(string user, Dictionary<string, object> searchObject)
 		{
-			string connectionString = ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
-			SQLiteConnection connection = new SQLiteConnection(connectionString);
+			SQLiteConnection connection = new SQLiteConnection(ConnectionString);
 			string deleteText = @"DELETE FROM birthdata";
 			SQLiteCommand command = new SQLiteCommand(deleteText, connection);
 			if (!searchObject.ContainsKey("owner"))
@@ -287,6 +282,21 @@ namespace BirthdayAPI
 				parameters[parameterName] = name.LastInitial.ToString();
 			}
 			return condition;
+		}
+
+		private static string ConnectionString
+		{
+			get 
+			{
+                if (ConfigurationManager.AppSettings.Get("UseFakeData") == null)
+                {
+                    return "Data Source=|DataDirectory|fake_data.sqlite;Version=3";
+                }
+
+				return	bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")) ?
+						ConfigurationManager.ConnectionStrings["FakeConnection"].ConnectionString :
+						ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
+			}
 		}
 	}
 }
