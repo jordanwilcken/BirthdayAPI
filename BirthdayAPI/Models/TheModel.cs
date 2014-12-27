@@ -146,7 +146,8 @@ namespace BirthdayAPI.Models
 		{
 			if (!Regex.IsMatch(format, "mm-dd", RegexOptions.IgnoreCase))
 			{
-				throw new NotImplementedException();
+				//Right now, "MM-DD" is the only format supported."
+				return false;
 			}
 
 			if (Regex.IsMatch(Birthday, @"\d{2}-\d{2}"))
