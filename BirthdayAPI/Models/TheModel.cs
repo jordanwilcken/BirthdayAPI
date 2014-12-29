@@ -14,7 +14,17 @@ namespace BirthdayAPI.Models
 	{
 		public static bool UseFakeData 
 		{
-			get { return bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")); }
+			get 
+			{
+				//This is the case when we're running unit tests.  Don't have access to any of
+				//the AppSettings from Web.config.
+				if (ConfigurationManager.AppSettings.Get("UseFakeData") == null)
+				{
+					return true;
+				}
+
+				return bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")); 
+			}
 			set { ConfigurationManager.AppSettings.Set("UseFakeData", value.ToString()); }
 		}
 
