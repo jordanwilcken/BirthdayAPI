@@ -290,7 +290,7 @@ namespace BirthdayAPI
 			{
                 if (ConfigurationManager.AppSettings.Get("UseFakeData") == null)
                 {
-                    return "Data Source=|DataDirectory|fake_data.sqlite;Version=3";
+                    return @"Data Source=..\App_Data\fake_data.sqlite;Version=3;";
                 }
 
 				return	bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")) ?
