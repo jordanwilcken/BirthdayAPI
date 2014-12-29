@@ -26,6 +26,9 @@ namespace BirthdayAPI.UnitTests
 					{ "names", new Name[] { new Name { FirstName = firstName, LastInitial = lastInitial } } }
 				}
 			);
+
+			Assert.That(theData.Any(), "Didn't get any birthdata out of the database, but should have.");
+
 			foreach(BirthData birthData in theData)
 			{
 				string failMessage = string.Format("Was trying to retrieve birthday of someone named '{0}', but somehow got birthday of someone named '{1}'.", firstName, birthData.Name.FirstName);

@@ -119,7 +119,7 @@ namespace BirthdayAPI
 			return returnMessage;
 		}
 
-		
+
 
 		public static string UpdateBirthData(string user, BirthData birthData)
 		{
@@ -286,14 +286,16 @@ namespace BirthdayAPI
 
 		private static string ConnectionString
 		{
-			get 
+			get
 			{
-                if (ConfigurationManager.AppSettings.Get("UseFakeData") == null)
-                {
-                    return @"Data Source=..\App_Data\fake_data.sqlite;Version=3;";
-                }
+				//This is the case when we're running unit tests.  Don't have access to any of
+				//the AppSettings from Web.config.
+				if (ConfigurationManager.AppSettings.Get("UseFakeData") == null)
+				{
+					return @"Data Source=..\App_Data\fake_data.sqlite;Version=3;";
+				}
 
-				return	bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")) ?
+				return bool.Parse(ConfigurationManager.AppSettings.Get("UseFakeData")) ?
 						ConfigurationManager.ConnectionStrings["FakeConnection"].ConnectionString :
 						ConfigurationManager.ConnectionStrings["SQLiteDbConnection"].ConnectionString;
 			}
