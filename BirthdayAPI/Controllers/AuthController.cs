@@ -11,6 +11,16 @@ namespace BirthdayAPI.Controllers
 {
 	public class AuthController : ApiController
 	{
+		/**
+		 * @apiGroup Auth
+		 * @api {Post} /Auth/Login Login
+		 * 
+		 * @apiParam {object} param			The parameter object expected by the API
+		 * @apiParam {string} param.username	The username
+		 * @apiParam {string} param.password	The password
+		 * 
+		 * @apiSuccess {bool} return The object returned by the API. True if login succeeded.
+		 */
 		public bool Login(Credentials credentials)
 		{
 			if (!Membership.ValidateUser(credentials.username, credentials.password))
@@ -24,11 +34,29 @@ namespace BirthdayAPI.Controllers
 			}
 		}
 
-		public void Logout()
+		/**
+		 * @apiGroup Auth
+		 * @api {Get} /Auth/Logout Logout
+		 * 
+		 * @apiSuccess {bool} return The object returned by the API. True if now logged out.
+		 */
+		[HttpGet]
+		public bool Logout()
 		{
 			FormsAuthentication.SignOut();
+			return true;
 		}
 
+		/**
+		 * @apiGroup Auth
+		 * @api {Post} /Auth/AddUser AddUser
+		 * 
+		 * @apiParam {object} param			The parameter object expected by the API
+		 * @apiParam {string} param.username	The username
+		 * @apiParam {string} param.password	The password
+		 * 
+		 * @apiSuccess {string} message A description of what happened during the attempt to create the user
+		 */
 		public object AddUser(Credentials credentials)
 		{
 			if (credentials.username == null)
