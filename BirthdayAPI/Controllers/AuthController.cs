@@ -13,13 +13,13 @@ namespace BirthdayAPI.Controllers
 	{
 		public bool Login(Credentials credentials)
 		{
-            if (!Membership.ValidateUser(credentials.username, credentials.password))
+			if (!Membership.ValidateUser(credentials.username, credentials.password))
 			{
 				return false;
 			}
 			else
 			{
-                FormsAuthentication.SetAuthCookie(credentials.username, false);
+				FormsAuthentication.SetAuthCookie(credentials.username, false);
 				return true;
 			}
 		}
@@ -29,33 +29,27 @@ namespace BirthdayAPI.Controllers
 			FormsAuthentication.SignOut();
 		}
 
-		//below here is boiler plate
-
-		// GET api/<controller>
-		public IEnumerable<string> Get()
+		public object AddUser(Credentials credentials)
 		{
-			return new string[] { "value1", "value2" };
-		}
+			if (credentials.username == null)
+			{
+				return new { Message = "I'm sorry, I couldn't find the username in the data you supplied." };
+			}
+			if (credentials.password == null)
+			{
+				return new { Message = "I'm sorry, I couldn't find the password in the data you supplied." };
+			}
 
-		// GET api/<controller>/5
-		public string Get(int id)
-		{
-			return "value";
-		}
+			try
+			{
+				Membership.CreateUser(credentials.username, credentials.password);
+			}
+			catch (MembershipCreateUserException e)
+			{
+				return new { Message = "User not created.  Here's what we know:\n\n" + e.Message };
+			}
 
-		// POST api/<controller>
-		public void Post([FromBody]string value)
-		{
-		}
-
-		// PUT api/<controller>/5
-		public void Put(int id, [FromBody]string value)
-		{
-		}
-
-		// DELETE api/<controller>/5
-		public void Delete(int id)
-		{
+			return new { Message = "User created." };
 		}
 	}
 

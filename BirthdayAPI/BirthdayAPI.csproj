@@ -118,6 +118,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="App_Data\app_data.sqlite" />
+    <Content Include="App_Data\fake_data.sqlite" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
