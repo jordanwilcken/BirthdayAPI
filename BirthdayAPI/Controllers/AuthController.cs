@@ -34,6 +34,12 @@ namespace BirthdayAPI.Controllers
 			}
 		}
 
+		[HttpGet]
+		public string GetGrumpy()
+		{
+			return "Now you're grumpy.";
+		}
+
 		/**
 		 * @apiGroup Auth
 		 * @api {Get} /Auth/Logout Logout
